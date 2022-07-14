@@ -22,7 +22,8 @@ public class AVL {
     public boolean esVacio() {
         return this.raiz == null;
     }
-
+ 
+    
     public boolean insertar(Comparable elemento) {
         boolean exito = true;
 
