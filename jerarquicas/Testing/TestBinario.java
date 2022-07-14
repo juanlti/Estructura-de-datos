@@ -32,6 +32,7 @@ public class TestBinario {
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
     public static final String RESET = "\u001B[0m";
+    
 
     public static void main(String args[]) {
 
