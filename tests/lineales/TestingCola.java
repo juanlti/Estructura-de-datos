@@ -96,6 +96,7 @@ public class TestingCola {
 		System.out.println("Verifica copia espera [6 7 8 9 <10 11> 23 24 <27> 28 29]: \t--> " + q2.toString());
 		q2.vaciar();
 		System.out.println("Vacia copia espera []: \t\t\t\t\t\t--> " + q2.toString());
+		
 
 	}
 }
