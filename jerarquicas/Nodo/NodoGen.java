@@ -5,12 +5,7 @@
  */
 package jerarquicas;
 
-/*
-Integrantes :
-Juan Cruz, Barrera. FAI-2121.
-Bruno, Terrazas. FAI-2585.
 
-*/
 public class NodoGen {
     
     
