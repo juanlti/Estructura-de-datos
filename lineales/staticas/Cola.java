@@ -7,12 +7,7 @@ package lineales.staticas;
 
 import java.util.Arrays;
 
-/*
-Integrantes :
-Juan Cruz, Barrera. FAI-2121.
-Bruno, Terrazas. FAI-2585.
 
-*/
 public class Cola {
 
     private static final int tamanio = 10;
