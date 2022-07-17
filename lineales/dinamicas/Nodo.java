@@ -5,8 +5,6 @@
  */
 /*
 
- Juan Cruz, Barrera Liberati. FAI-2121.
-Corregido con fecha 03/07
 
 
  */
