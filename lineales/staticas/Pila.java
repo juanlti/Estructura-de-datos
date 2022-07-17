@@ -6,11 +6,6 @@
 package lineales.staticas;
 
 
-/**
- *  Juan Cruz, Barrera Liberati. FAI-2121.
-  corregido con fecha 03/07
- * @author juanc
- */
 public class Pila {
 
     private Object[] arreglo;
