@@ -5,12 +5,6 @@
  */
 package lineales.dinamicas;
 
-/**
- *
- * @author 
- * juanc Juan Cruz, Barrera Liberati. FAI-2121. corregido con fecha
- * 03/07
- */
 public class Pila {
 
     private Nodo tope;
