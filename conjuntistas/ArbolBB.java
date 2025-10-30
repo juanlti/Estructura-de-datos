@@ -3,11 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package conjuntistas;
+package services;
 
+import conjuntistas.NodoArbol;
 
+/**
+ *
+ * @author juanc
+ */
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
 
-import lineales.dinamicas.Lista;
 
 /**
  *
@@ -42,7 +50,7 @@ public class ArbolBB {
         NodoArbol agregar = null;
         boolean agregado = false;
         if (n != null && hijo.compareTo(n.getElemento()) != 0) {
-
+                System.out.println("valor de hijo "+hijo.toString() +" y se compara con  "+n.getElemento()+ " y su resultado es "+hijo.compareTo(n.getElemento()));
             if (hijo.compareTo(n.getElemento()) < 0) {
                 //hijo es menor al padre
                 //hijo se agrega al lado izq
@@ -323,6 +331,8 @@ public class ArbolBB {
     }
 
     public Lista listar() {
+        
+        //nivel
         Lista ls = new Lista();
 
         if (this.raiz != null) {
@@ -778,7 +788,7 @@ public class ArbolBB {
 
         if (this.raiz != null) {
             NodoArbol aux = perteneceAux(this.raiz, aBuscar);
-            System.out.println("encontrado ? "+aux.getElemento());
+          //  System.out.println("encontrado ? " + aux.getElemento());
             if (aux != null) {
                 if (aux.getElemento().compareTo(p) >= 0) {
                     ls.insertar(aux.getElemento(), ls.longitud() + 1);
@@ -795,14 +805,14 @@ public class ArbolBB {
     private void listarMayoresQueAux(NodoArbol n, Comparable p, Lista ls) {
 
         if (n != null) {
-            System.out.println("valor "+n.getElemento());
-            if (n.getIzquierdo()!=null && p.compareTo(n.getIzquierdo().getElemento()) <= 0) {
+            System.out.println("valor " + n.getElemento());
+            if (n.getIzquierdo() != null && p.compareTo(n.getIzquierdo().getElemento()) <= 0) {
                 ls.insertar(n.getIzquierdo().getElemento(), ls.longitud() + 1);
                 listarMayoresQueAux(n.getIzquierdo(), p, ls);
 
             }
 
-            if (n.getDerecho()!=null && p.compareTo(n.getDerecho().getElemento()) <= 0) {
+            if (n.getDerecho() != null && p.compareTo(n.getDerecho().getElemento()) <= 0) {
                 ls.insertar(n.getDerecho().getElemento(), ls.longitud() + 1);
                 listarMayoresQueAux(n.getDerecho(), p, ls);
 
@@ -811,4 +821,71 @@ public class ArbolBB {
         }
 
     }
+
+    public boolean esVacio() {
+
+        return this.raiz == null;
+    }
+
+    public Lista listarPreorden() {
+        Lista ls = new Lista();
+
+        if (this.raiz != null) {
+            NodoArbol NodoAux = this.raiz;
+
+            //System.out.println("nodo raiz " + NodoAux.getElemento());
+            //ls.insertar(NodoAux.getElemento(), 1);
+            this.auxPreOrden(NodoAux, ls, 0);
+
+        }
+
+        return ls;
+    }
+
+    private void auxPreOrden(NodoArbol NodoAux, Lista ls, int pos) {
+        if (NodoAux != null) {
+           
+            Object aux = NodoAux.getElemento();
+            ls.insertar(aux, pos+1);
+             auxPreOrden(NodoAux.getIzquierdo(), ls, pos);
+                 auxPreOrden(NodoAux.getDerecho(), ls, pos);
+
+        }
+
+         
+         
+         
+
+        
+       
+    }
+        public Lista listarInorden() {
+        Lista ls = new Lista();
+
+        if (this.raiz != null) {
+            NodoArbol NodoAux = this.raiz;
+
+            //System.out.println("nodo raiz " + NodoAux.getElemento());
+
+            this.auxInorden(NodoAux, ls, 0);
+
+        }
+
+        return ls;
+    }
+            private void auxInorden(NodoArbol NodoAux, Lista ls, int pos) {
+                 Object aux ;
+        if (NodoAux.getIzquierdo()!= null) {
+         auxPreOrden(NodoAux.getIzquierdo(), ls, pos);
+  
+        }                     pos++;
+             aux = NodoAux.getElemento();
+            ls.insertar(aux, pos);
+        
+        
+        
+    
+       
+    }
+        
 }
