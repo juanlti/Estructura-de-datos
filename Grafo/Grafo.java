@@ -3,17 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Grafo;
+package services;
 
-import lineales.dinamicas.Cola;
-import lineales.dinamicas.Lista;
-
+/**
+ *
+ * @author juanc
+ */
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 /**
  * ↑: Alt+24 para flecha arriba. ↓: Alt+25 para flecha abajo. →: Alt+26 para
  * flecha derecha. ←: Alt+27 para flecha izquierda
  *
- * @author juanc
- *  //revisar Clone, Recorrido, grafo no dirigodo
+ * @author juanc //revisar Clone, Recorrido, grafo no dirigodo
  */
 public class Grafo {
 
@@ -57,27 +62,32 @@ public class Grafo {
 
     }
 
+    @Override
     public String toString() {
-//↑: Alt+24 para flecha arriba. ↓: Alt+25 para flecha abajo
-        NodoVert moverVertice = this.inicio;
+        StringBuilder sb = new StringBuilder();
 
-        String resultado = "";
-        while (moverVertice != null) {
-            NodoAdy moverAdy = moverVertice.getPrimerAdy();
-            System.out.print(moverVertice.getElem() + "  → ");
-            while (moverAdy != null) {
+        for (NodoVert v = this.inicio; v != null; v = v.getSigVertice()) {
+            sb.append(v.getElem()).append(" → ");
 
-                System.out.print(" [ * " + moverAdy.getVertice().getElem() + " ] →");
-                moverAdy = moverAdy.getSigAdyancete();
-
+            NodoAdy a = v.getPrimerAdy();
+            if (a == null) {
+                sb.append("∅");
+            } else {
+                while (a != null) {
+                    sb.append('[')
+                            .append(a.getVertice().getElem());
+                    // Si tenés etiqueta/peso en la arista, podés mostrarlo:
+                    // sb.append(':').append(a.getEtiqueta());
+                    sb.append(']');
+                    a = a.getSigAdyancete(); // ← nombre consistente
+                    if (a != null) {
+                        sb.append(" → ");
+                    }
+                }
             }
-            moverAdy = null;
-            System.out.println("");
-            System.out.println("↓");
-            resultado = " ";
-            moverVertice = moverVertice.getSigVertice();
+            sb.append(System.lineSeparator());
         }
-        return resultado;
+        return sb.toString();
     }
 
     public boolean insertarArco(Object origen, Object destino, boolean esGrafo, Object etiqueta) {
@@ -95,21 +105,20 @@ public class Grafo {
 
                     //agrego a origen un nuevo nodoAdy destino
                     NodoAdy destinoNodoAdy = new NodoAdy(auxDestino, null);
-                    
-                       //recorrerAdyacentes(auxOrigen, destinoNodoAdy);
-                    exito = recorrerAdyacentesOtraOpc(auxOrigen, destinoNodoAdy);
-                 
-                  
-              
-                      // revisar:  cuando es grafo no dirigido
+
+                    recorrerAdyacentes(auxOrigen, destinoNodoAdy);
+                    //   exito = recorrerAdyacentesOtraOpc(auxOrigen, destinoNodoAdy);
+                    exito = true;
+
+                    // revisar:  cuando es grafo no dirigido
                     if (esGrafo) {
-                              // agrego a destino un nuevo nodoAdy origen
+                        System.out.println("aca no debe entrar");
+                        // agrego a destino un nuevo nodoAdy origen
                         NodoAdy origenNodoAdy = new NodoAdy(auxOrigen, null);
                         recorrerAdyacentes(auxDestino, origenNodoAdy);
-                 
+
                     }
 
-            
                 }
 
             }
@@ -125,7 +134,7 @@ public class Grafo {
             aux = ubicacion.getPrimerAdy();
             destinoInsertar.setSigAdyancete(aux);
             ubicacion.setPrimerAdy(destinoInsertar);
-            
+
             if (ubicacion.getPrimerAdy().getSigAdyancete() != null) {
                 if (ubicacion.getPrimerAdy().getSigAdyancete().getSigAdyancete() != null) {
                 }
@@ -152,7 +161,7 @@ public class Grafo {
         } else {
             NodoAdy moverAdy = ubicacion.getPrimerAdy();
             while (moverAdy.getSigAdyancete() != null && !existe) {
-          
+
                 if (moverAdy.getVertice().getElem().equals(destinoInsertar.toString())) {
                     existe = true;
 
@@ -163,33 +172,25 @@ public class Grafo {
             }
             if (!existe) {
                 moverAdy.setSigAdyancete(destinoInsertar);
-              
+
             }
         }
 
         return existe;
     }
 
-    public Lista porProdundidad(Grafo g1) {
+    public Lista listarEnProfundidad(Object x) {
 
         Lista visitados = new Lista();
-        int control = 0;
 
-        NodoVert aux = g1.inicio.getSigVertice().getSigVertice().getSigVertice();
-  
-        System.out.println(visitados.toString());
-    
+        NodoVert aux = this.ubicarVertice(x);
 
-        System.out.println(visitados.toString());
-        visitados = profundiadDesde(aux, visitados);
+        while (aux != null) {
 
-        while (aux != null && visitados.longitud() < this.cantidadVertices) {
-            control++;
-  
-            if (visitados.localizar(aux.getElem()) == -1) {
-          
+            if (visitados.localizar(aux.getElem()) < 0) {
+
                 //entonces el vertice aux no se encuentra en visitados, por entede sus ady tampoco
-                visitados = profundiadDesde(aux, visitados);
+                listarEnProfundidadAux(aux, visitados);
             }
             aux = aux.getSigVertice();
 
@@ -197,37 +198,38 @@ public class Grafo {
         return visitados;
     }
 
-    private Lista profundiadDesde(NodoVert u, Lista visitados) {
+    private void listarEnProfundidadAux(NodoVert n, Lista visitados) {
 
-        visitados.insertar(u.getElem(), visitados.longitud() + 1);
-        NodoAdy moverAdy = u.getPrimerAdy();
+        if (n != null) {
+            visitados.insertar(n.getElem(), visitados.longitud() + 1);
+            NodoAdy moverAdy = n.getPrimerAdy();
 
-        while (moverAdy != null) {
-            if (visitados.localizar(moverAdy.getVertice().getElem()) == -1) {
-                //significa que nunca lo visito, entonces llamo con moverAdy
-                profundiadDesde(moverAdy.getVertice(), visitados);
+            while (moverAdy != null) {
+                //  System.out.println("VISITADOS " + moverAdy.getVertice().getElem());
+                if (visitados.localizar(moverAdy.getVertice().getElem()) < 0) {
+                    listarEnProfundidadAux(moverAdy.getVertice(), visitados);
+                }
+
+                moverAdy = moverAdy.getSigAdyancete();
+
             }
-            moverAdy = moverAdy.getSigAdyancete();
-
         }
-        return visitados;
 
     }
 
-
-    public Lista porAnchura() {
+    public Lista listarEnAnchura(Object x) {
         Lista visitados = new Lista();
-        NodoVert aux = this.inicio.getSigVertice().getSigVertice().getSigVertice().getSigVertice().getSigVertice();
+        NodoVert aux = this.ubicarVertice(x);
         // NodoVert aux = this.inicio.getSigVertice().getSigVertice().getSigVertice().getSigVertice().getSigVertice().getSigVertice();
-        //System.out.println("el primero es ? " + aux.getElem());
+        System.out.println("el primero es ? " + aux.getElem());
 
         if (this.inicio != null) {
-            visitados = anchurarDesde(aux, visitados);
+            visitados = listarEnAnchuraAux(aux, visitados);
 
             while (aux != null && visitados.longitud() < this.cantidadVertices) {
 
-                if (visitados.localizar(aux) == -1) {
-                    visitados = anchurarDesde(aux, visitados);
+                if (visitados.localizar(aux.getElem()) == -1) {
+                    visitados = listarEnAnchuraAux(aux, visitados);
                 }
                 aux = aux.getSigVertice();
 
@@ -238,7 +240,7 @@ public class Grafo {
 
     }
 
-    private Lista anchurarDesde(NodoVert u, Lista visitados) {
+    private Lista listarEnAnchuraAux(NodoVert u, Lista visitados) {
         Cola c1 = new Cola();
 
         visitados.insertar(u.getElem(), visitados.longitud() + 1);
@@ -246,18 +248,17 @@ public class Grafo {
 
         while (!c1.esVacia()) {
             NodoVert auxVert = (NodoVert) c1.obtenerFrente();
-           
+
             c1.sacar();
 
             NodoAdy moverAdy = auxVert.getPrimerAdy();
             while (moverAdy != null) {
-        
+
                 if (visitados.localizar(moverAdy.getVertice().getElem()) == -1) {
-        
+
                     visitados.insertar(moverAdy.getVertice().getElem(), visitados.longitud() + 1);
                     c1.poner(moverAdy.getVertice());
                 }
-        
 
                 moverAdy = moverAdy.getSigAdyancete();
 
@@ -274,7 +275,7 @@ public class Grafo {
 
         while (otrosVertices != null) {
             if (!otrosVertices.getElem().equals(elemento)) {
-               
+
                 //busco ady que apunten al alemento
                 NodoAdy auxMover = otrosVertices.getPrimerAdy();
                 if (auxMover != null && auxMover.getVertice().getElem().equals(elemento)) {
@@ -343,7 +344,7 @@ public class Grafo {
 
     public boolean verificarArco(Object origen, Object destino) {
 
-        return auxEliminarYverificarArco(origen, destino, false);
+        return auxEliminarYverificarArco(origen, destino, true);
 
     }
 
@@ -387,35 +388,33 @@ public class Grafo {
     public boolean eliminarArco(Object origen, Object destino) {
         return auxEliminarYverificarArco(origen, destino, true);
     }
-    
+
     public Grafo clone() {
         // revisar 
         Grafo grafoClone = new Grafo();
-        System.out.println("valor de inicio " + grafoClone.inicio);
-        System.out.println("valor de cantidad " + grafoClone.cantidadVertices);
+        //   System.out.println("valor de inicio " + this.inicio.getElem());
+        // System.out.println("valor de cantidad " + this.cantidadVertices);
         grafoClone.inicio = new NodoVert(this.inicio.getElem(), null, null);
-        System.out.println("valor de inicio " + grafoClone.inicio.getElem());
+        // System.out.println("valor de inicio " + grafoClone.inicio.getElem());
         NodoVert moverVerticesClone = grafoClone.inicio;
         NodoVert moverVerticeOriginal = this.inicio;
         while (moverVerticeOriginal != null) {
 
-            System.out.println("vertice " + moverVerticeOriginal.getElem().toString());
-            System.out.println("ady " + moverVerticeOriginal.getPrimerAdy());
-
+            //   System.out.println("vertice " + moverVerticeOriginal.getElem().toString());
+            //  System.out.println("ady " + moverVerticeOriginal.getPrimerAdy());
             if (moverVerticeOriginal.getPrimerAdy() != null) {
-                System.out.println("ady dentro " + moverVerticeOriginal.getPrimerAdy().getVertice().getElem().toString());
+                ///    System.out.println("ady dentro " + moverVerticeOriginal.getPrimerAdy().getVertice().getElem().toString());
                 NodoAdy moverAdyOriginal = moverVerticeOriginal.getPrimerAdy();
                 NodoAdy moverAdyClone = new NodoAdy(moverAdyOriginal.getVertice(), null);
+                System.out.println(" nuevbo elemento " + moverAdyClone.getVertice().getElem());
                 moverVerticesClone.setPrimerAdy(moverAdyClone);
 
-                moverAdyOriginal = moverAdyOriginal.getSigAdyancete();
-
-                moverAdyClone = moverVerticesClone.getPrimerAdy();
-
+                //moverAdyOriginal = moverAdyOriginal.getSigAdyancete();
+                //  moverAdyClone = moverVerticesClone.getPrimerAdy();
                 //primer vertice
                 //(Object elem, NodoVert sigVertice, NodoAdy primerAdy
                 while (moverAdyOriginal != null) {
-                    System.out.println("ady de original " + moverAdyOriginal.getVertice().getElem());
+                    //     System.out.println("ady de original " + moverAdyOriginal.getVertice().getElem());
                     //clono
                     //public NodoAdy(NodoVert vertice, NodoAdy sigAdyancete)
                     NodoAdy aux = new NodoAdy(moverAdyOriginal.getVertice(), null);
@@ -429,8 +428,8 @@ public class Grafo {
 
                 NodoVert auxVertClone = new NodoVert(moverVerticeOriginal.getSigVertice().getElem(), null, null);
                 moverVerticesClone.setSigVertice(auxVertClone);
-
             }
+            //   System.out.println("vertice "+moverVerticesClone.getElem());
             moverVerticesClone = moverVerticesClone.getSigVertice();
             moverVerticeOriginal = moverVerticeOriginal.getSigVertice();
 
@@ -439,68 +438,48 @@ public class Grafo {
         return grafoClone;
     }
 
-    public Lista camino(Object origen, Object destino) {
-             // revisar 
-        Lista recorrido = new Lista();
-        if (this.inicio != null && origen != null && destino != null) {
-
-            //obtengo vertice origen.
-            NodoVert auxOrigen = ubicarVertice(origen);
-            if (auxOrigen != null) {
-                NodoVert auxDestino = ubicarVertice(destino);
-                if (auxDestino != null) {
-                    NodoAdy primerAdyOrigen=auxOrigen.getPrimerAdy();
-                    System.out.println("ady origen "+primerAdyOrigen.getVertice().getElem().toString());
-                   
-                    int i=0;
-                    System.out.println("destino "+auxDestino.getElem().toString());
-                 while(i<2){
-                   caminoAux(primerAdyOrigen, auxDestino, recorrido);
-                   primerAdyOrigen=primerAdyOrigen.getSigAdyancete();
-                   i++;
-                 }
-                    
-           
-                }
-            }
-
+    public boolean existeCamino(Object origen, Object destino) {
+        NodoVert o = ubicarVertice(origen);
+        if (o == null) {
+            return false;
         }
-        return recorrido;
 
+        NodoVert d = ubicarVertice(destino);
+        if (d == null) {
+            return false;
+        }
+
+        Lista visitados = new Lista(); // actúa como set de visitados
+        return existeCaminoAux(o, d, visitados);
     }
 
-    private boolean caminoAux(NodoAdy primerAdyOrigen, NodoVert destino, Lista recorrido) {
-        boolean encontrado = false;
-        boolean seguir = true;
-    
+    private boolean existeCaminoAux(NodoVert n, NodoVert destino, Lista visitados) {
+        if (n == null) {
+            return false;
+        }
 
-            if (primerAdyOrigen != null) {
-               
-                //pregunto si el destino es un ady
-                if (primerAdyOrigen.getVertice().getElem().equals(destino.getElem())) {
-                    //si lo es, termine el recorrido
-                    encontrado = true;
-                
-                    recorrido.insertar(primerAdyOrigen.getVertice().getElem(), recorrido.longitud() + 1);
-                } else {
-                    //caso contrario sigo buscando
-                    while (seguir) {
-                        
-                        encontrado = caminoAux(primerAdyOrigen.getSigAdyancete(), destino, recorrido);
-              
-                        recorrido.insertar(primerAdyOrigen.getVertice().getElem(), recorrido.longitud() + 1);
-                        if (encontrado) {
-                            seguir = false;
+        // Si ya llegamos
+        if (n.getElem().equals(destino.getElem())) {
+            return true;
+        }
 
-                        }
-                        primerAdyOrigen = primerAdyOrigen.getSigAdyancete();
-                    }
+        // Si ya lo visité, corto (evita ciclos)
+        if (visitados.localizar(n.getElem()) > 0) {
+            return false;
+        }
 
-                }
+        // Marco visitado UNA sola vez
+        visitados.insertar(n.getElem(), visitados.longitud() + 1);
 
+        // Exploro vecinos con short-circuit
+        NodoAdy ady = n.getPrimerAdy();
+        while (ady != null) {
+            if (existeCaminoAux(ady.getVertice(), destino, visitados)) {
+                return true; // corto apenas encuentro
             }
+            ady = ady.getSigAdyancete();
+        }
 
-        
-        return encontrado;
+        return false;
     }
 }
